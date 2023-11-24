@@ -14,6 +14,7 @@ const non_secure_1 = require("nanoid/non-secure");
 let StoryService = class StoryService {
     constructor() {
         this.dataPath = (0, path_1.join)(__dirname, '..', '..', 'data', 'stories');
+        this.sortedDataPath = (0, path_1.join)(__dirname, '..', '..', 'data');
     }
     async getStoryById(id) {
         const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
@@ -28,6 +29,7 @@ let StoryService = class StoryService {
         };
         const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
         await fs_1.promises.writeFile(filePath, JSON.stringify(story));
+        this.sortAndSaveStories();
         return story;
     }
     async updateStory(id, updatedStory) {
@@ -35,11 +37,28 @@ let StoryService = class StoryService {
         const updated = { ...story, ...updatedStory };
         const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
         await fs_1.promises.writeFile(filePath, JSON.stringify(updated));
+        if (false) {
+            this.sortAndSaveStories();
+        }
         return updated;
     }
     async deleteStory(id) {
         const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
         await fs_1.promises.unlink(filePath);
+        this.sortAndSaveStories();
+    }
+    async sortAndSaveStories() {
+        const fileNames = await fs_1.promises.readdir(this.dataPath);
+        const stories = await Promise.all(fileNames.map(async (fileName) => {
+            const filePath = (0, path_1.join)(this.dataPath, fileName);
+            const fileData = await fs_1.promises.readFile(filePath, 'utf8');
+            return JSON.parse(fileData);
+        }));
+        const sortedStories = stories
+            .map((story) => ({ id: story.id, start: story.startPoint }))
+            .sort((a, b) => a.start - b.start);
+        const sortedStoriesPath = (0, path_1.join)(this.sortedDataPath, 'sortedStories.json');
+        await fs_1.promises.writeFile(sortedStoriesPath, JSON.stringify(sortedStories));
     }
 };
 exports.StoryService = StoryService;

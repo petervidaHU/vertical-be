@@ -20,5 +20,9 @@ export class CreateStoryDto {
   @IsPositive()
   @IsNotEmpty()
   startPoint: number;
+
+  @IsNumber()
+  @IsPositive()
+  @IsNotEmpty()
   endPoint: number;
 }

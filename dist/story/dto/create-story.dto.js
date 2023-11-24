@@ -31,4 +31,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateStoryDto.prototype, "startPoint", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateStoryDto.prototype, "endPoint", void 0);
 //# sourceMappingURL=create-story.dto.js.map
