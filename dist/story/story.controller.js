@@ -15,19 +15,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoryController = void 0;
 const common_1 = require("@nestjs/common");
 const story_service_1 = require("./story.service");
+const create_story_dto_1 = require("./dto/create-story.dto");
+const update_story_dto_1 = require("./dto/update-story.dto");
 let StoryController = class StoryController {
-    constructor(epicService) {
-        this.epicService = epicService;
+    constructor(storyService) {
+        this.storyService = storyService;
     }
-    async getOneStory(id) {
+    async getStoryById(id) {
         try {
-            const storyData = await this.epicService.getEpicById(id);
-            return storyData;
+            return await this.storyService.getStoryById(id);
         }
         catch (error) {
-            return {
-                message: `a rohadt életbe már megint mi van ${id}`,
-            };
+            throw new common_1.NotFoundException(`Story not found with id ${id}`);
+        }
+    }
+    async createStory(newStory) {
+        console.log('news:', newStory);
+        return await this.storyService.createStory(newStory);
+    }
+    async updateStory(id, updatedStory) {
+        try {
+            return await this.storyService.updateStory(id, updatedStory);
+        }
+        catch (error) {
+            throw new common_1.NotFoundException(`Story not found with id ${id}`);
+        }
+    }
+    async deleteStory(id) {
+        try {
+            await this.storyService.deleteStory(id);
+            return { message: `Story with id ${id} deleted.` };
+        }
+        catch (error) {
+            throw new common_1.NotFoundException(`Story not found with id ${id}`);
         }
     }
 };
@@ -38,7 +58,29 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], StoryController.prototype, "getOneStory", null);
+], StoryController.prototype, "getStoryById", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_story_dto_1.CreateStoryDto]),
+    __metadata("design:returntype", Promise)
+], StoryController.prototype, "createStory", null);
+__decorate([
+    (0, common_1.Put)('/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_story_dto_1.UpdateStoryDto]),
+    __metadata("design:returntype", Promise)
+], StoryController.prototype, "updateStory", null);
+__decorate([
+    (0, common_1.Delete)('/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], StoryController.prototype, "deleteStory", null);
 exports.StoryController = StoryController = __decorate([
     (0, common_1.Controller)('story'),
     __metadata("design:paramtypes", [story_service_1.StoryService])

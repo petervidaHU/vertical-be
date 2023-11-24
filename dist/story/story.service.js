@@ -10,11 +10,36 @@ exports.StoryService = void 0;
 const common_1 = require("@nestjs/common");
 const fs_1 = require("fs");
 const path_1 = require("path");
+const non_secure_1 = require("nanoid/non-secure");
 let StoryService = class StoryService {
-    async getEpicById(id) {
-        const filePath = (0, path_1.join)(__dirname, '..', '..', 'data', 'stories', `${id}.json`);
+    constructor() {
+        this.dataPath = (0, path_1.join)(__dirname, '..', '..', 'data', 'stories');
+    }
+    async getStoryById(id) {
+        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
         const data = await fs_1.promises.readFile(filePath, 'utf8');
         return JSON.parse(data);
+    }
+    async createStory(newStory) {
+        const id = (0, non_secure_1.nanoid)();
+        const story = {
+            id,
+            ...newStory,
+        };
+        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
+        await fs_1.promises.writeFile(filePath, JSON.stringify(story));
+        return story;
+    }
+    async updateStory(id, updatedStory) {
+        const story = await this.getStoryById(id);
+        const updated = { ...story, ...updatedStory };
+        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
+        await fs_1.promises.writeFile(filePath, JSON.stringify(updated));
+        return updated;
+    }
+    async deleteStory(id) {
+        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
+        await fs_1.promises.unlink(filePath);
     }
 };
 exports.StoryService = StoryService;

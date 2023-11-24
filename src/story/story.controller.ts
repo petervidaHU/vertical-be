@@ -1,21 +1,56 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { StoryService } from './story.service';
 import iStory from './story.interface';
-import ErrorI from 'src/error.interface';
+import { CreateStoryDto } from './dto/create-story.dto';
+import { UpdateStoryDto } from './dto/update-story.dto';
 
 @Controller('story')
 export class StoryController {
-  constructor(private epicService: StoryService) {}
+  constructor(private storyService: StoryService) {}
 
   @Get('/:id')
-  async getOneStory(@Param('id') id: string): Promise<iStory | ErrorI> {
+  async getStoryById(@Param('id') id: string): Promise<iStory> {
     try {
-      const storyData = await this.epicService.getEpicById(id);
-      return storyData;
+      return await this.storyService.getStoryById(id);
     } catch (error) {
-      return {
-        message: `a rohadt életbe már megint mi van ${id}`,
-      };
+      throw new NotFoundException(`Story not found with id ${id}`);
+    }
+  }
+
+  @Post()
+  async createStory(@Body() newStory: CreateStoryDto): Promise<iStory> {
+    console.log('news:', newStory);
+    return await this.storyService.createStory(newStory);
+  }
+
+  @Put('/:id')
+  async updateStory(
+    @Param('id') id: string,
+    @Body() updatedStory: UpdateStoryDto,
+  ): Promise<iStory> {
+    try {
+      return await this.storyService.updateStory(id, updatedStory);
+    } catch (error) {
+      throw new NotFoundException(`Story not found with id ${id}`);
+    }
+  }
+
+  @Delete('/:id')
+  async deleteStory(@Param('id') id: string): Promise<{ message: string }> {
+    try {
+      await this.storyService.deleteStory(id);
+      return { message: `Story with id ${id} deleted.` };
+    } catch (error) {
+      throw new NotFoundException(`Story not found with id ${id}`);
     }
   }
 }

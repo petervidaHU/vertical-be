@@ -1,8 +1,14 @@
 import { StoryService } from './story.service';
 import iStory from './story.interface';
-import ErrorI from 'src/error.interface';
+import { CreateStoryDto } from './dto/create-story.dto';
+import { UpdateStoryDto } from './dto/update-story.dto';
 export declare class StoryController {
-    private epicService;
-    constructor(epicService: StoryService);
-    getOneStory(id: string): Promise<iStory | ErrorI>;
+    private storyService;
+    constructor(storyService: StoryService);
+    getStoryById(id: string): Promise<iStory>;
+    createStory(newStory: CreateStoryDto): Promise<iStory>;
+    updateStory(id: string, updatedStory: UpdateStoryDto): Promise<iStory>;
+    deleteStory(id: string): Promise<{
+        message: string;
+    }>;
 }

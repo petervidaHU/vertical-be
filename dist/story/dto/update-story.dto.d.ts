@@ -1,8 +1,6 @@
-interface Epic {
-    id: string;
+export declare class UpdateStoryDto {
     title: string;
     description: string;
     startPoint: number;
     endPoint: number;
 }
-export default Epic;
