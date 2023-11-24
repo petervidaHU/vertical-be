@@ -37,7 +37,7 @@ let StoryService = class StoryService {
         const updated = { ...story, ...updatedStory };
         const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
         await fs_1.promises.writeFile(filePath, JSON.stringify(updated));
-        if (false) {
+        if (updatedStory.startPoint) {
             this.sortAndSaveStories();
         }
         return updated;

@@ -24,5 +24,10 @@ export class UpdateStoryDto {
   @IsPositive()
   @IsNotEmpty()
   startPoint: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  @IsNotEmpty()
   endPoint: number;
 }
