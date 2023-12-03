@@ -1,70 +1,57 @@
-import { Injectable } from '@nestjs/common';
-import { promises as fs } from 'fs';
-import { join } from 'path';
-import iStory from './story.interface';
 import { nanoid } from 'nanoid/non-secure';
+
+import { Injectable } from '@nestjs/common';
+import iStory from './story.interface';
+import { CreateStoryDto } from './dto/create-story.dto';
+
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { StoryEntity } from './story.entity';
 
 @Injectable()
 export class StoryService {
-  private readonly dataPath = join(__dirname, '..', '..', 'data', 'stories');
-  private readonly sortedDataPath = join(__dirname, '..', '..', 'data');
+  constructor(
+    @InjectRepository(StoryEntity)
+    private storyRepository: Repository<StoryEntity>,
+  ) {}
 
-  async getStoryById(id: string): Promise<iStory> {
-    const filePath = join(this.dataPath, `${id}.json`);
-    const data = await fs.readFile(filePath, 'utf8');
-    return JSON.parse(data);
+  async findById(id: string): Promise<iStory> {
+    return await this.storyRepository.findOne({ where: { id: id } });
   }
 
-  async createStory(newStory: Omit<iStory, 'id'>): Promise<iStory> {
+  async createStory(storyData: CreateStoryDto): Promise<StoryEntity> {
     const id = nanoid();
-    const story: iStory = {
-      id,
-      ...newStory,
-    };
-    const filePath = join(this.dataPath, `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(story));
-    this.sortAndSaveStories();
-    return story;
+    const newStory: StoryEntity = new StoryEntity();
+    newStory.id = id;
+    newStory.title = storyData.title;
+    newStory.startPoint = storyData.startPoint;
+    newStory.endPoint = storyData.endPoint;
+
+    await this.storyRepository.save(newStory);
+    return newStory;
   }
 
   async updateStory(
     id: string,
-    updatedStory: Partial<Omit<iStory, 'id'>>,
-  ): Promise<iStory> {
-    const story = await this.getStoryById(id);
+    updatedStory: Partial<Omit<StoryEntity, 'id'>>,
+  ): Promise<StoryEntity> {
+    const story = await this.storyRepository.findOne({ where: { id: id } });
     const updated = { ...story, ...updatedStory };
 
-    const filePath = join(this.dataPath, `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(updated));
-
-    if (updatedStory.startPoint) {
-      this.sortAndSaveStories();
-    }
-
+    await this.storyRepository.save(updated);
     return updated;
   }
 
   async deleteStory(id: string): Promise<void> {
-    const filePath = join(this.dataPath, `${id}.json`);
-    await fs.unlink(filePath);
-    this.sortAndSaveStories();
+    await this.storyRepository.delete(id);
   }
 
-  private async sortAndSaveStories(): Promise<void> {
-    const fileNames = await fs.readdir(this.dataPath);
-    const stories = await Promise.all(
-      fileNames.map(async (fileName) => {
-        const filePath = join(this.dataPath, fileName);
-        const fileData = await fs.readFile(filePath, 'utf8');
-        return JSON.parse(fileData);
-      }),
-    );
-
-    const sortedStories: { id: string; start: number }[] = stories
-      .map((story) => ({ id: story.id, start: story.startPoint }))
-      .sort((a, b) => a.start - b.start);
-
-    const sortedStoriesPath = join(this.sortedDataPath, 'sortedStories.json');
-    await fs.writeFile(sortedStoriesPath, JSON.stringify(sortedStories));
+  async getUpcomingSortedStories(position: number): Promise<StoryEntity[]> {
+    return await this.storyRepository
+      .createQueryBuilder('story')
+      .where(`story.startPoint > ${position} `)
+      .orderBy('story.startPoint', 'ASC')
+      .take(6)
+      .getMany();
   }
 }
