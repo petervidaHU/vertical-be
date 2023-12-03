@@ -12,14 +12,25 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const story_controller_1 = require("./story/story.controller");
 const story_service_1 = require("./story/story.service");
+const jwt_1 = require("@nestjs/jwt");
+const auth_controller_1 = require("./auth/auth.controller");
+const auth_service_1 = require("./auth/auth.service");
+const user_controller_1 = require("./user/user.controller");
+const user_service_1 = require("./user/user.service");
+const jwt_strategy_1 = require("./auth/jwt.strategy");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        controllers: [app_controller_1.AppController, story_controller_1.StoryController],
-        providers: [app_service_1.AppService, story_service_1.StoryService],
+        imports: [
+            jwt_1.JwtModule.register({
+                secret: 'your-secret-key',
+                signOptions: { expiresIn: '60m' },
+            }),
+        ],
+        controllers: [app_controller_1.AppController, story_controller_1.StoryController, auth_controller_1.AuthController, user_controller_1.UserController],
+        providers: [app_service_1.AppService, story_service_1.StoryService, auth_service_1.AuthService, user_service_1.UserService, jwt_strategy_1.JwtStrategy],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
