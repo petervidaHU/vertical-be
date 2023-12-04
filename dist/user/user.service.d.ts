@@ -1,12 +1,11 @@
-import { User } from './user.interface';
+import { Repository } from 'typeorm';
+import { UserEntity } from './user.entity';
 import { NewUserDto } from './dto/new-user-dto';
 export declare class UserService {
-    private usersFolderPath;
-    private usersFileExtension;
-    constructor();
-    private getUserFilePath;
-    findAll(): Promise<User[]>;
-    findOne(email: string): Promise<User | undefined>;
-    findById(id: string): Promise<User | undefined>;
-    createUser(registrationData: NewUserDto): User;
+    private userRepository;
+    constructor(userRepository: Repository<UserEntity>);
+    findAll(): Promise<UserEntity[]>;
+    findOne(email: string): Promise<UserEntity | undefined>;
+    findById(id: string): Promise<UserEntity | undefined>;
+    createUser(registrationData: NewUserDto): Promise<UserEntity>;
 }

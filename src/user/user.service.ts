@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { nanoid } from 'nanoid';
+import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,7 +29,7 @@ export class UserService {
 
   async createUser(registrationData: NewUserDto): Promise<UserEntity> {
     const newUser: UserEntity = new UserEntity();
-    newUser.id = nanoid();
+    newUser.id = uuid();
     newUser.email = registrationData.email;
     newUser.password = bcrypt.hashSync(registrationData.password, 10);
 

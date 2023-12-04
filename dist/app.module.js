@@ -18,16 +18,34 @@ const auth_service_1 = require("./auth/auth.service");
 const user_controller_1 = require("./user/user.controller");
 const user_service_1 = require("./user/user.service");
 const jwt_strategy_1 = require("./auth/jwt.strategy");
+const typeorm_1 = require("@nestjs/typeorm");
+const story_entity_1 = require("./story/story.entity");
+const user_entity_1 = require("./user/user.entity");
+const config_1 = require("@nestjs/config");
+console.log('String(process.env.DB_PASSWORD)', process.env.DB_HOST);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule.forRoot(),
             jwt_1.JwtModule.register({
                 secret: 'your-secret-key',
                 signOptions: { expiresIn: '60m' },
             }),
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'postgres',
+                host: process.env.DB_HOST,
+                port: parseInt(process.env.DB_PORT, 10),
+                username: process.env.DB_USERNAME,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_DATABASE,
+                entities: [story_entity_1.StoryEntity, user_entity_1.UserEntity],
+                autoLoadEntities: true,
+                synchronize: true,
+            }),
+            typeorm_1.TypeOrmModule.forFeature([story_entity_1.StoryEntity, user_entity_1.UserEntity]),
         ],
         controllers: [app_controller_1.AppController, story_controller_1.StoryController, auth_controller_1.AuthController, user_controller_1.UserController],
         providers: [app_service_1.AppService, story_service_1.StoryService, auth_service_1.AuthService, user_service_1.UserService, jwt_strategy_1.JwtStrategy],

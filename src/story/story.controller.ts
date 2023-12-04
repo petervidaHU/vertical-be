@@ -20,9 +20,18 @@ export class StoryController {
   @Get('/:id')
   async getStoryById(@Param('id') id: string): Promise<iStory> {
     try {
-      return await this.storyService.getStoryById(id);
+      return await this.storyService.findById(id);
     } catch (error) {
       throw new NotFoundException(`Story not found with id ${id}`);
+    }
+  }
+
+  @Get('/pre/:position')
+  async prefetch(@Param('position') position: number): Promise<Array<iStory>> {
+    try {
+      return await this.storyService.getUpcomingStories(position);
+    } catch (error) {
+      throw new NotFoundException(`Story not found with pos ${position}`);
     }
   }
 

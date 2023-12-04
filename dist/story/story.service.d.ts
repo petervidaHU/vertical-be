@@ -1,10 +1,13 @@
 import iStory from './story.interface';
+import { CreateStoryDto } from './dto/create-story.dto';
+import { Repository } from 'typeorm';
+import { StoryEntity } from './story.entity';
 export declare class StoryService {
-    private readonly dataPath;
-    private readonly sortedDataPath;
-    getStoryById(id: string): Promise<iStory>;
-    createStory(newStory: Omit<iStory, 'id'>): Promise<iStory>;
-    updateStory(id: string, updatedStory: Partial<Omit<iStory, 'id'>>): Promise<iStory>;
+    private storyRepository;
+    constructor(storyRepository: Repository<StoryEntity>);
+    findById(id: string): Promise<iStory>;
+    createStory(storyData: CreateStoryDto): Promise<StoryEntity>;
+    updateStory(id: string, updatedStory: Partial<Omit<StoryEntity, 'id'>>): Promise<StoryEntity>;
     deleteStory(id: string): Promise<void>;
-    private sortAndSaveStories;
+    getUpcomingStories(position: number): Promise<StoryEntity[]>;
 }

@@ -5,64 +5,59 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoryService = void 0;
+const uuid_1 = require("uuid");
 const common_1 = require("@nestjs/common");
-const fs_1 = require("fs");
-const path_1 = require("path");
-const non_secure_1 = require("nanoid/non-secure");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const story_entity_1 = require("./story.entity");
 let StoryService = class StoryService {
-    constructor() {
-        this.dataPath = (0, path_1.join)(__dirname, '..', '..', 'data', 'stories');
-        this.sortedDataPath = (0, path_1.join)(__dirname, '..', '..', 'data');
+    constructor(storyRepository) {
+        this.storyRepository = storyRepository;
     }
-    async getStoryById(id) {
-        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
-        const data = await fs_1.promises.readFile(filePath, 'utf8');
-        return JSON.parse(data);
+    async findById(id) {
+        return await this.storyRepository.findOne({ where: { id: id } });
     }
-    async createStory(newStory) {
-        const id = (0, non_secure_1.nanoid)();
-        const story = {
-            id,
-            ...newStory,
-        };
-        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
-        await fs_1.promises.writeFile(filePath, JSON.stringify(story));
-        this.sortAndSaveStories();
-        return story;
+    async createStory(storyData) {
+        const id = (0, uuid_1.v4)();
+        const newStory = new story_entity_1.StoryEntity();
+        newStory.id = id;
+        newStory.title = storyData.title;
+        newStory.startPoint = storyData.startPoint;
+        newStory.endPoint = storyData.endPoint;
+        newStory.description = storyData.description;
+        await this.storyRepository.save(newStory);
+        return newStory;
     }
     async updateStory(id, updatedStory) {
-        const story = await this.getStoryById(id);
+        const story = await this.storyRepository.findOne({ where: { id: id } });
         const updated = { ...story, ...updatedStory };
-        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
-        await fs_1.promises.writeFile(filePath, JSON.stringify(updated));
-        if (updatedStory.startPoint) {
-            this.sortAndSaveStories();
-        }
+        await this.storyRepository.save(updated);
         return updated;
     }
     async deleteStory(id) {
-        const filePath = (0, path_1.join)(this.dataPath, `${id}.json`);
-        await fs_1.promises.unlink(filePath);
-        this.sortAndSaveStories();
+        await this.storyRepository.delete(id);
     }
-    async sortAndSaveStories() {
-        const fileNames = await fs_1.promises.readdir(this.dataPath);
-        const stories = await Promise.all(fileNames.map(async (fileName) => {
-            const filePath = (0, path_1.join)(this.dataPath, fileName);
-            const fileData = await fs_1.promises.readFile(filePath, 'utf8');
-            return JSON.parse(fileData);
-        }));
-        const sortedStories = stories
-            .map((story) => ({ id: story.id, start: story.startPoint }))
-            .sort((a, b) => a.start - b.start);
-        const sortedStoriesPath = (0, path_1.join)(this.sortedDataPath, 'sortedStories.json');
-        await fs_1.promises.writeFile(sortedStoriesPath, JSON.stringify(sortedStories));
+    async getUpcomingStories(position) {
+        return await this.storyRepository
+            .createQueryBuilder('story')
+            .where(`story.startPoint > ${position} `)
+            .orderBy('story.startPoint', 'ASC')
+            .take(6)
+            .getMany();
     }
 };
 exports.StoryService = StoryService;
 exports.StoryService = StoryService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(story_entity_1.StoryEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], StoryService);
 //# sourceMappingURL=story.service.js.map

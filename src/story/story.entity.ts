@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('story')
 export class StoryEntity {
-  @PrimaryColumn('nanoid')
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column({ unique: true })

@@ -1,5 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
-
+import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import iStory from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
@@ -20,12 +19,13 @@ export class StoryService {
   }
 
   async createStory(storyData: CreateStoryDto): Promise<StoryEntity> {
-    const id = nanoid();
+    const id = uuid();
     const newStory: StoryEntity = new StoryEntity();
     newStory.id = id;
     newStory.title = storyData.title;
     newStory.startPoint = storyData.startPoint;
     newStory.endPoint = storyData.endPoint;
+    newStory.description = storyData.description;
 
     await this.storyRepository.save(newStory);
     return newStory;
@@ -46,7 +46,7 @@ export class StoryService {
     await this.storyRepository.delete(id);
   }
 
-  async getUpcomingSortedStories(position: number): Promise<StoryEntity[]> {
+  async getUpcomingStories(position: number): Promise<StoryEntity[]> {
     return await this.storyRepository
       .createQueryBuilder('story')
       .where(`story.startPoint > ${position} `)

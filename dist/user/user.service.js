@@ -8,63 +8,43 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
-const fs = require("fs");
 const bcrypt = require("bcrypt");
-const path_1 = require("path");
-const nanoid_1 = require("nanoid");
+const uuid_1 = require("uuid");
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const user_entity_1 = require("./user.entity");
 let UserService = class UserService {
-    constructor() {
-        this.usersFileExtension = '.json';
-        this.usersFolderPath = (0, path_1.join)(__dirname, '..', '..', 'data', 'users');
-    }
-    getUserFilePath(userId) {
-        return (0, path_1.join)(this.usersFolderPath, `${userId}${this.usersFileExtension}`);
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
     async findAll() {
-        const files = fs.readdirSync(this.usersFolderPath);
-        return files
-            .filter((file) => file.endsWith(this.usersFileExtension))
-            .map((file) => JSON.parse(fs.readFileSync((0, path_1.join)(this.usersFolderPath, file), 'utf-8')));
+        return await this.userRepository.find();
     }
     async findOne(email) {
-        const files = fs.readdirSync(this.usersFolderPath);
-        for (const file of files) {
-            if (file.endsWith(this.usersFileExtension)) {
-                const user = JSON.parse(fs.readFileSync((0, path_1.join)(this.usersFolderPath, file), 'utf-8'));
-                if (user.email === email) {
-                    return user;
-                }
-            }
-        }
-        return undefined;
+        return await this.userRepository.findOne({ where: { email: email } });
     }
     async findById(id) {
-        const userFilePath = this.getUserFilePath(id);
-        if (fs.existsSync(userFilePath)) {
-            const user = JSON.parse(fs.readFileSync(userFilePath, 'utf-8'));
-            return user;
-        }
-        return undefined;
+        return await this.userRepository.findOne({ where: { id: id } });
     }
-    createUser(registrationData) {
-        console.log('regdata:', registrationData);
-        const id = (0, nanoid_1.nanoid)();
-        const newUser = {
-            id,
-            email: registrationData.email,
-            password: bcrypt.hashSync(registrationData.password, 10),
-        };
-        const filePath = (0, path_1.join)(this.usersFolderPath, `${id}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(newUser));
+    async createUser(registrationData) {
+        const newUser = new user_entity_1.UserEntity();
+        newUser.id = (0, uuid_1.v4)();
+        newUser.email = registrationData.email;
+        newUser.password = bcrypt.hashSync(registrationData.password, 10);
+        await this.userRepository.save(newUser);
         return newUser;
     }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

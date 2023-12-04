@@ -10,23 +10,30 @@ import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StoryEntity } from './story/story.entity';
+import { UserEntity } from './user/user.entity';
+import { ConfigModule } from '@nestjs/config';
 
+console.log('String(process.env.DB_PASSWORD)', process.env.DB_HOST);
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     JwtModule.register({
       secret: 'your-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'petervida',
-      password: 'iddqd378',
-      database: 'vertical1',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [StoryEntity, UserEntity],
       autoLoadEntities: true,
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([StoryEntity, UserEntity]),
   ],
   controllers: [AppController, StoryController, AuthController, UserController],
   providers: [AppService, StoryService, AuthService, UserService, JwtStrategy],

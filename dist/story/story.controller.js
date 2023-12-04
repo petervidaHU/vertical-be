@@ -23,10 +23,18 @@ let StoryController = class StoryController {
     }
     async getStoryById(id) {
         try {
-            return await this.storyService.getStoryById(id);
+            return await this.storyService.findById(id);
         }
         catch (error) {
             throw new common_1.NotFoundException(`Story not found with id ${id}`);
+        }
+    }
+    async prefetch(position) {
+        try {
+            return await this.storyService.getUpcomingStories(position);
+        }
+        catch (error) {
+            throw new common_1.NotFoundException(`Story not found with pos ${position}`);
         }
     }
     async createStory(newStory) {
@@ -59,6 +67,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], StoryController.prototype, "getStoryById", null);
+__decorate([
+    (0, common_1.Get)('/pre/:position'),
+    __param(0, (0, common_1.Param)('position')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], StoryController.prototype, "prefetch", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
