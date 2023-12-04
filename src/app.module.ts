@@ -19,7 +19,7 @@ console.log('String(process.env.DB_PASSWORD)', process.env.DB_HOST);
   imports: [
     ConfigModule.forRoot(),
     JwtModule.register({
-      secret: 'your-secret-key',
+      secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '60m' },
     }),
     TypeOrmModule.forRoot({

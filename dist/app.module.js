@@ -31,7 +31,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot(),
             jwt_1.JwtModule.register({
-                secret: 'your-secret-key',
+                secret: process.env.JWT_SECRET_KEY,
                 signOptions: { expiresIn: '60m' },
             }),
             typeorm_1.TypeOrmModule.forRoot({
