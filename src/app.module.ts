@@ -1,3 +1,5 @@
+import morgan from 'morgan';
+
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,8 +15,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoryEntity } from './story/story.entity';
 import { UserEntity } from './user/user.entity';
 import { ConfigModule } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 
-console.log('String(process.env.DB_PASSWORD)', process.env.DB_HOST);
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -39,3 +41,11 @@ console.log('String(process.env.DB_PASSWORD)', process.env.DB_HOST);
   providers: [AppService, StoryService, AuthService, UserService, JwtStrategy],
 })
 export class AppModule {}
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.use(morgan('dev'));
+  await app.listen(3000);
+}
+
+bootstrap();

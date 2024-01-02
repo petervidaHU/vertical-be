@@ -22,7 +22,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const story_entity_1 = require("./story/story.entity");
 const user_entity_1 = require("./user/user.entity");
 const config_1 = require("@nestjs/config");
-console.log('String(process.env.DB_PASSWORD)', process.env.DB_HOST);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
