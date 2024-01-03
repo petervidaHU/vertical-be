@@ -14,6 +14,20 @@ export class StoryService {
     private storyRepository: Repository<StoryEntity>,
   ) {}
 
+  async findStories(
+    page: number,
+    limit: number,
+    sort: string,
+    order: 'ASC' | 'DESC',
+  ): Promise<iStory[]> {
+    return await this.storyRepository
+      .createQueryBuilder('story')
+      .orderBy(`story.${sort}`, order)
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+  }
+
   async findById(id: string): Promise<iStory> {
     return await this.storyRepository.findOne({ where: { id: id } });
   }

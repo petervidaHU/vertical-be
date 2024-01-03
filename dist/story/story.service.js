@@ -22,6 +22,15 @@ let StoryService = class StoryService {
     constructor(storyRepository) {
         this.storyRepository = storyRepository;
     }
+    async findStories(page, limit, sort, order) {
+        console.log('order:', order);
+        return await this.storyRepository
+            .createQueryBuilder('story')
+            .orderBy(`story.${sort}`, order)
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getMany();
+    }
     async findById(id) {
         return await this.storyRepository.findOne({ where: { id: id } });
     }
@@ -48,7 +57,7 @@ let StoryService = class StoryService {
     async getUpcomingStories(position) {
         return await this.storyRepository
             .createQueryBuilder('story')
-            .where(`story.startPoint > ${position} `)
+            .where(`story.startPoint >= ${position - 1000} `)
             .orderBy('story.startPoint', 'ASC')
             .take(6)
             .getMany();

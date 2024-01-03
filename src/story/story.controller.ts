@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { StoryService } from './story.service';
 import iStory from './story.interface';
@@ -17,12 +18,26 @@ import { UpdateStoryDto } from './dto/update-story.dto';
 export class StoryController {
   constructor(private storyService: StoryService) {}
 
+  @Get('/list')
+  async findAll(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('sort') sort: string,
+    @Query('order') order: 'ASC' | 'DESC',
+  ): Promise<iStory[]> {
+    try {
+      return this.storyService.findStories(page, limit, sort, order);
+    } catch (error) {
+      throw new NotFoundException('Error in get all story');
+    }
+  }
+
   @Get('/:id')
   async getStoryById(@Param('id') id: string): Promise<iStory> {
     try {
       return await this.storyService.findById(id);
     } catch (error) {
-      throw new NotFoundException(`Story not found with id ${id}`);
+      throw new NotFoundException(`Error with found story with id: ${id}`);
     }
   }
 
@@ -31,7 +46,9 @@ export class StoryController {
     try {
       return await this.storyService.getUpcomingStories(position);
     } catch (error) {
-      throw new NotFoundException(`Story not found with pos ${position}`);
+      throw new NotFoundException(
+        `Error in found stories with pos: ${position}`,
+      );
     }
   }
 

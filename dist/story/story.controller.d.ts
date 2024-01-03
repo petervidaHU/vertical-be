@@ -5,6 +5,7 @@ import { UpdateStoryDto } from './dto/update-story.dto';
 export declare class StoryController {
     private storyService;
     constructor(storyService: StoryService);
+    findAll(page: number, limit: number, sort: string, order: 'ASC' | 'DESC'): Promise<iStory[]>;
     getStoryById(id: string): Promise<iStory>;
     prefetch(position: number): Promise<Array<iStory>>;
     createStory(newStory: CreateStoryDto): Promise<iStory>;

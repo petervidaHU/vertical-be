@@ -21,12 +21,21 @@ let StoryController = class StoryController {
     constructor(storyService) {
         this.storyService = storyService;
     }
+    async findAll(page, limit, sort, order) {
+        console.log('in story controller', page, limit);
+        try {
+            return this.storyService.findStories(page, limit, sort, order);
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('Error in get all story');
+        }
+    }
     async getStoryById(id) {
         try {
             return await this.storyService.findById(id);
         }
         catch (error) {
-            throw new common_1.NotFoundException(`Story not found with id ${id}`);
+            throw new common_1.NotFoundException(`Error with found story with id: ${id}`);
         }
     }
     async prefetch(position) {
@@ -34,7 +43,7 @@ let StoryController = class StoryController {
             return await this.storyService.getUpcomingStories(position);
         }
         catch (error) {
-            throw new common_1.NotFoundException(`Story not found with pos ${position}`);
+            throw new common_1.NotFoundException(`Error in found stories with pos: ${position}`);
         }
     }
     async createStory(newStory) {
@@ -60,6 +69,16 @@ let StoryController = class StoryController {
     }
 };
 exports.StoryController = StoryController;
+__decorate([
+    (0, common_1.Get)('/list'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('sort')),
+    __param(3, (0, common_1.Query)('order')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, String, String]),
+    __metadata("design:returntype", Promise)
+], StoryController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('/:id'),
     __param(0, (0, common_1.Param)('id')),
