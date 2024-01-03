@@ -49,7 +49,7 @@ export class StoryService {
   async getUpcomingStories(position: number): Promise<StoryEntity[]> {
     return await this.storyRepository
       .createQueryBuilder('story')
-      .where(`story.startPoint > ${position} `)
+      .where(`story.startPoint >= ${position - 1000} `)
       .orderBy('story.startPoint', 'ASC')
       .take(6)
       .getMany();
