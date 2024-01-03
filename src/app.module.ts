@@ -41,11 +41,3 @@ import { NestFactory } from '@nestjs/core';
   providers: [AppService, StoryService, AuthService, UserService, JwtStrategy],
 })
 export class AppModule {}
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.use(morgan('dev'));
-  await app.listen(3000);
-}
-
-bootstrap();
