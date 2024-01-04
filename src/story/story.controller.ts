@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { StoryService } from './story.service';
-import iStory from './story.interface';
+import { iStory, typeOfStory } from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 
@@ -28,9 +28,10 @@ export class StoryController {
     @Query('limit') limit: number,
     @Query('sort') sort: string,
     @Query('order') order: 'ASC' | 'DESC',
+    @Query('type') type: typeOfStory,
   ): Promise<{ meta: metaForList; list: Array<iStory> }> {
     try {
-      return this.storyService.findStories(page, limit, sort, order);
+      return this.storyService.findStories(page, limit, sort, order, type);
     } catch (error) {
       throw new NotFoundException('Error in get all story');
     }

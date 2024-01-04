@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
-import iStory from './story.interface';
+import { iStory, typeOfStory } from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,21 +13,28 @@ export class StoryService {
   constructor(
     @InjectRepository(StoryEntity)
     private storyRepository: Repository<StoryEntity>,
-  ) {}
+  ) { }
 
   async findStories(
     page: number,
     limit: number,
     sort: string,
     order: 'ASC' | 'DESC',
+    type: typeOfStory,
   ): Promise<{ meta: metaForList; list: Array<iStory> }> {
     const total = await this.storyRepository.count();
-    const list = await this.storyRepository
-      .createQueryBuilder('story')
+    const queryBuilder = this.storyRepository.createQueryBuilder('story');
+
+    if (type) {
+      queryBuilder.andWhere(`story.type = :type`, { type });
+    }
+
+    const list = await queryBuilder
       .orderBy(`story.${sort}`, order)
       .skip((page - 1) * limit)
       .take(limit)
       .getMany();
+
     return { meta: { total }, list };
   }
 
@@ -39,6 +46,7 @@ export class StoryService {
     const id = uuid();
     const newStory: StoryEntity = new StoryEntity();
     newStory.id = id;
+    newStory.type = storyData.type;
     newStory.title = storyData.title;
     newStory.startPoint = storyData.startPoint;
     newStory.endPoint = storyData.endPoint;

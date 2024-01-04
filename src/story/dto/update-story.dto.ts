@@ -6,11 +6,16 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { typeOfStory } from '../story.interface';
 
 export class UpdateStoryDto {
   @IsString()
   @IsNotEmpty()
   id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: typeOfStory;
 
   @IsOptional()
   @IsNotEmpty()

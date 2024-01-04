@@ -5,12 +5,17 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { typeOfStory } from '../story.interface';
 
 export class CreateStoryDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)
   title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: typeOfStory;
 
   @IsString()
   @IsNotEmpty()
