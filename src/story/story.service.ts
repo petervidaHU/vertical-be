@@ -13,7 +13,7 @@ export class StoryService {
   constructor(
     @InjectRepository(StoryEntity)
     private storyRepository: Repository<StoryEntity>,
-  ) { }
+  ) {}
 
   async findStories(
     page: number,

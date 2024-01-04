@@ -1,4 +1,4 @@
-import iStory from './story.interface';
+import { iStory, typeOfStory } from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { Repository } from 'typeorm';
 import { StoryEntity } from './story.entity';
@@ -6,7 +6,7 @@ import { metaForList } from './story.controller';
 export declare class StoryService {
     private storyRepository;
     constructor(storyRepository: Repository<StoryEntity>);
-    findStories(page: number, limit: number, sort: string, order: 'ASC' | 'DESC'): Promise<{
+    findStories(page: number, limit: number, sort: string, order: 'ASC' | 'DESC', type: typeOfStory): Promise<{
         meta: metaForList;
         list: Array<iStory>;
     }>;

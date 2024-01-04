@@ -59,7 +59,7 @@ export class StoryController {
 
   @Post()
   async createStory(@Body() newStory: CreateStoryDto): Promise<iStory> {
-    console.log('news:', newStory);
+    console.log('new story:', newStory);
     return await this.storyService.createStory(newStory);
   }
 

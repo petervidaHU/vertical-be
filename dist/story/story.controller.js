@@ -21,9 +21,9 @@ let StoryController = class StoryController {
     constructor(storyService) {
         this.storyService = storyService;
     }
-    async findAll(page, limit, sort, order) {
+    async findAll(page, limit, sort, order, type) {
         try {
-            return this.storyService.findStories(page, limit, sort, order);
+            return this.storyService.findStories(page, limit, sort, order, type);
         }
         catch (error) {
             throw new common_1.NotFoundException('Error in get all story');
@@ -46,7 +46,7 @@ let StoryController = class StoryController {
         }
     }
     async createStory(newStory) {
-        console.log('news:', newStory);
+        console.log('new story:', newStory);
         return await this.storyService.createStory(newStory);
     }
     async updateStory(id, updatedStory) {
@@ -74,8 +74,9 @@ __decorate([
     __param(1, (0, common_1.Query)('limit')),
     __param(2, (0, common_1.Query)('sort')),
     __param(3, (0, common_1.Query)('order')),
+    __param(4, (0, common_1.Query)('type')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, String, String]),
+    __metadata("design:paramtypes", [Number, Number, String, String, String]),
     __metadata("design:returntype", Promise)
 ], StoryController.prototype, "findAll", null);
 __decorate([

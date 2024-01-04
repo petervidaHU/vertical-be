@@ -20,6 +20,11 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateStoryDto.prototype, "id", void 0);
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateStoryDto.prototype, "type", void 0);
+__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),

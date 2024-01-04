@@ -22,10 +22,13 @@ let StoryService = class StoryService {
     constructor(storyRepository) {
         this.storyRepository = storyRepository;
     }
-    async findStories(page, limit, sort, order) {
+    async findStories(page, limit, sort, order, type) {
         const total = await this.storyRepository.count();
-        const list = await this.storyRepository
-            .createQueryBuilder('story')
+        const queryBuilder = this.storyRepository.createQueryBuilder('story');
+        if (type) {
+            queryBuilder.andWhere(`story.type = :type`, { type });
+        }
+        const list = await queryBuilder
             .orderBy(`story.${sort}`, order)
             .skip((page - 1) * limit)
             .take(limit)
@@ -39,6 +42,7 @@ let StoryService = class StoryService {
         const id = (0, uuid_1.v4)();
         const newStory = new story_entity_1.StoryEntity();
         newStory.id = id;
+        newStory.type = storyData.type;
         newStory.title = storyData.title;
         newStory.startPoint = storyData.startPoint;
         newStory.endPoint = storyData.endPoint;
