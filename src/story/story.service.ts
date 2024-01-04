@@ -6,6 +6,7 @@ import { CreateStoryDto } from './dto/create-story.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StoryEntity } from './story.entity';
+import { metaForList } from './story.controller';
 
 @Injectable()
 export class StoryService {
@@ -19,13 +20,15 @@ export class StoryService {
     limit: number,
     sort: string,
     order: 'ASC' | 'DESC',
-  ): Promise<iStory[]> {
-    return await this.storyRepository
+  ): Promise<{ meta: metaForList; list: Array<iStory> }> {
+    const total = await this.storyRepository.count();
+    const list = await this.storyRepository
       .createQueryBuilder('story')
       .orderBy(`story.${sort}`, order)
       .skip((page - 1) * limit)
       .take(limit)
       .getMany();
+    return { meta: { total }, list };
   }
 
   async findById(id: string): Promise<iStory> {

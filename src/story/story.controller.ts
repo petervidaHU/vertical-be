@@ -14,6 +14,10 @@ import iStory from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 
+export interface metaForList {
+  total: number;
+}
+
 @Controller('story')
 export class StoryController {
   constructor(private storyService: StoryService) {}
@@ -24,7 +28,7 @@ export class StoryController {
     @Query('limit') limit: number,
     @Query('sort') sort: string,
     @Query('order') order: 'ASC' | 'DESC',
-  ): Promise<iStory[]> {
+  ): Promise<{ meta: metaForList; list: Array<iStory> }> {
     try {
       return this.storyService.findStories(page, limit, sort, order);
     } catch (error) {

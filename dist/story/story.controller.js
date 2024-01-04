@@ -22,7 +22,6 @@ let StoryController = class StoryController {
         this.storyService = storyService;
     }
     async findAll(page, limit, sort, order) {
-        console.log('in story controller', page, limit);
         try {
             return this.storyService.findStories(page, limit, sort, order);
         }

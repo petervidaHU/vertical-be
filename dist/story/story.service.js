@@ -23,13 +23,14 @@ let StoryService = class StoryService {
         this.storyRepository = storyRepository;
     }
     async findStories(page, limit, sort, order) {
-        console.log('order:', order);
-        return await this.storyRepository
+        const total = await this.storyRepository.count();
+        const list = await this.storyRepository
             .createQueryBuilder('story')
             .orderBy(`story.${sort}`, order)
             .skip((page - 1) * limit)
             .take(limit)
             .getMany();
+        return { meta: { total }, list };
     }
     async findById(id) {
         return await this.storyRepository.findOne({ where: { id: id } });
