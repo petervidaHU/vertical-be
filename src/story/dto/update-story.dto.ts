@@ -8,6 +8,10 @@ import {
 } from 'class-validator';
 
 export class UpdateStoryDto {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
   @IsOptional()
   @IsNotEmpty()
   @IsString()
