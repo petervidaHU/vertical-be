@@ -13,7 +13,7 @@ export class StoryService {
   constructor(
     @InjectRepository(StoryEntity)
     private storyRepository: Repository<StoryEntity>,
-  ) {}
+  ) { }
 
   async findStories(
     page: number,
@@ -72,16 +72,20 @@ export class StoryService {
   }
 
   async getUpcomingStories(position: number): Promise<StoryEntity[]> {
-    return await this.storyRepository
+    const storiesAhead = await this.storyRepository
       .createQueryBuilder('story')
-      .where('story.endPoint >= :nearPast', {
-        nearPast: position - 1000,
-      })
-      .andWhere('story.startPoint <= :nearFuture', {
-        nearFuture: position + 1000,
-      })
+      .where(`story.startPoint > ${position}`)
       .orderBy('story.startPoint', 'ASC')
-      .take(6)
+      .take(10)
       .getMany();
+
+    const storiesBehind = await this.storyRepository
+      .createQueryBuilder('story')
+      .where(`story.startPoint <= ${position}`)
+      .orderBy('story.startPoint', 'ASC')
+      .take(10)
+      .getMany();
+
+      return [...storiesAhead, ...storiesBehind];
   }
 }
