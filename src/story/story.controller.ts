@@ -9,7 +9,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { StoryService } from './story.service';
+import { StoriesResponse, StoryService } from './story.service';
 import { iStory, typeOfStory } from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
@@ -47,7 +47,9 @@ export class StoryController {
   }
 
   @Get('/pre/:position')
-  async prefetch(@Param('position') position: number): Promise<Array<iStory>> {
+  async prefetch(
+    @Param('position') position: number,
+  ): Promise<StoriesResponse> {
     try {
       return await this.storyService.getUpcomingStories(position);
     } catch (error) {

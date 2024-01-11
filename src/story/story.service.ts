@@ -8,12 +8,17 @@ import { Repository } from 'typeorm';
 import { StoryEntity } from './story.entity';
 import { metaForList } from './story.controller';
 
+export type StoriesResponse = {
+  stories: Array<StoryEntity>;
+  epics: Array<StoryEntity>;
+};
+
 @Injectable()
 export class StoryService {
   constructor(
     @InjectRepository(StoryEntity)
     private storyRepository: Repository<StoryEntity>,
-  ) { }
+  ) {}
 
   async findStories(
     page: number,
@@ -71,21 +76,42 @@ export class StoryService {
     await this.storyRepository.delete(id);
   }
 
-  async getUpcomingStories(position: number): Promise<StoryEntity[]> {
+  async getUpcomingStories(position: number): Promise<StoriesResponse> {
     const storiesAhead = await this.storyRepository
       .createQueryBuilder('story')
       .where(`story.startPoint > ${position}`)
+      .andWhere('story.type = :type', { type: 'story' })
       .orderBy('story.startPoint', 'ASC')
       .take(10)
       .getMany();
 
     const storiesBehind = await this.storyRepository
       .createQueryBuilder('story')
+      .orderBy('story.startPoint', 'DESC')
       .where(`story.startPoint <= ${position}`)
-      .orderBy('story.startPoint', 'ASC')
+      .andWhere('story.type = :type', { type: 'story' })
       .take(10)
       .getMany();
 
-      return [...storiesAhead, ...storiesBehind];
+    const epicsAhead = await this.storyRepository
+      .createQueryBuilder('story')
+      .where(`story.startPoint > ${position}`)
+      .andWhere('story.type = :type', { type: 'epic' })
+      .orderBy('story.startPoint', 'ASC')
+      .take(3)
+      .getMany();
+
+    const epicsBehind = await this.storyRepository
+      .createQueryBuilder('story')
+      .where(`story.startPoint <= ${position}`)
+      .andWhere('story.type = :type', { type: 'epic' })
+      .orderBy('story.startPoint', 'DESC')
+      .take(3)
+      .getMany();
+
+    return {
+      stories: [...storiesAhead, ...storiesBehind],
+      epics: [...epicsAhead, ...epicsBehind],
+    };
   }
 }
