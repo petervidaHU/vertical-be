@@ -13,7 +13,11 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['http://localhost:3001', 'https://vertical-fe-beryl.vercel.app/'],
+    // origin: ['http://localhost:3001', 'https://vertical-fe-beryl.vercel.app/'],
+    origin: function (origin, callback) {
+      console.log('origin:', origin); // log the origin of every request
+      callback(null, true);
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type',
     preflightContinue: false,
