@@ -19,6 +19,7 @@ async function bootstrap() {
         'http://localhost:3001',
         'https://vertical-fe-beryl.vercel.app/',
       ];
+      console.log('origin:::::::::::::::::::::::::', origin);
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
