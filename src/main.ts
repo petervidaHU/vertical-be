@@ -15,8 +15,15 @@ async function bootstrap() {
   app.enableCors({
     // origin: ['http://localhost:3001', 'https://vertical-fe-beryl.vercel.app/'],
     origin: function (origin, callback) {
-      console.log('origin:', origin); // log the origin of every request
-      callback(null, true);
+      const allowedOrigins = [
+        'http://localhost:3001',
+        'https://vertical-fe-beryl.vercel.app/',
+      ];
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type',
