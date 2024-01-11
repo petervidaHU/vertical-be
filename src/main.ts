@@ -21,8 +21,10 @@ async function bootstrap() {
       ];
       console.log('origin:::::::::::::::::::::::::', origin);
       if (allowedOrigins.includes(origin)) {
+        console.log('allowedorigin DO matchs', origin);
         callback(null, true);
       } else {
+        console.log('allowedorigin not matchs', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
