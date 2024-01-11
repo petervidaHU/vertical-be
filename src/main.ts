@@ -20,6 +20,7 @@ async function bootstrap() {
         'https://vertical-fe-beryl.vercel.app/',
       ];
       console.log('origin:::::::::::::::::::::::::', origin);
+      console.log('allowed origin:::::::::::::::::::::::::', allowedOrigins);
       if (allowedOrigins.includes(origin)) {
         console.log('allowedorigin DO matchs', origin);
         callback(null, true);
