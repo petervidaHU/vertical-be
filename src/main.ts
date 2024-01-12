@@ -15,14 +15,12 @@ async function bootstrap() {
   app.enableCors({
     // origin: ['http://localhost:3001', 'https://vertical-fe-beryl.vercel.app/'],
     origin: function (origin, callback) {
-      const allowedOrigins = [
+      /*   const allowedOrigins = [
         'http://localhost:3001',
         'https://vertical-fe-beryl.vercel.app/',
-      ];
+      ]; */
       console.log('origin:::::::::::::::::::::::::', origin);
-      console.log('allowed origin:::::::::::::::::::::::::', allowedOrigins);
-      if (allowedOrigins.includes(origin)) {
-        console.log('allowedorigin DO matchs', origin);
+      if (/* allowedOrigins.includes(origin)*/ true) {
         callback(null, true);
       } else {
         console.log('allowedorigin not matchs', origin);
