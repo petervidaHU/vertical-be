@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
-import { iStory, typeOfStory } from './story.interface';
+import { iStory, iTimeline, typeOfStory } from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
@@ -112,6 +112,29 @@ export class StoryService {
     return {
       stories: [...storiesAhead, ...storiesBehind],
       epics: [...epicsAhead, ...epicsBehind],
+    };
+  }
+
+  async findLastStory(): Promise<iTimeline> {
+    const lastElement = await this.storyRepository
+      .createQueryBuilder('story')
+      .orderBy('story.endPoint', 'DESC')
+      .take(1)
+      .getOne();
+
+    const epics = await this.storyRepository
+      .createQueryBuilder('story')
+      .where('story.type = :type', { type: 'epic' })
+      .orderBy('story.endPoint', 'ASC')
+      .select(['story.title', 'story.endPoint', 'story.startPoint', 'story.id'])
+      .getMany();
+
+    return {
+      last: {
+        lastId: lastElement.id,
+        endOfTheWorld: lastElement.endPoint,
+      },
+      epics,
     };
   }
 }

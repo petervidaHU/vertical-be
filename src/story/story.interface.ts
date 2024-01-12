@@ -8,3 +8,13 @@ export interface iStory {
   startPoint: number;
   endPoint: number;
 }
+
+export interface iLast {
+  endOfTheWorld: iStory['endPoint'];
+  lastId: iStory['id'];
+}
+
+export interface iTimeline {
+  epics: Array<Omit<iStory, 'description' | 'type'>>;
+  last: iLast;
+}

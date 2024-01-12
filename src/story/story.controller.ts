@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { StoriesResponse, StoryService } from './story.service';
-import { iStory, typeOfStory } from './story.interface';
+import { iStory, iTimeline, typeOfStory } from './story.interface';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 
@@ -34,6 +34,15 @@ export class StoryController {
       return this.storyService.findStories(page, limit, sort, order, type);
     } catch (error) {
       throw new NotFoundException('Error in get all story');
+    }
+  }
+
+  @Get('/timeline')
+  async findLast(): Promise<iTimeline> {
+    try {
+      return this.storyService.findLastStory();
+    } catch (error) {
+      throw new NotFoundException('Error in get last story');
     }
   }
 
